@@ -9,12 +9,6 @@
 body { max-width: 960px; margin: 10px auto; font-family: sans-serif; padding: 0 10px; }
 input { width: 100%; padding: 3px; margin: 2px 0 0 0; }
 input.param { width: auto;  margin-right: 5px; }
-.print-only { display: none; }
-</style>
-<style media="print">
-#pairs li { page-break-inside: avoid; }
-.no-print { display:none; }
-.print-only { display: block; }
 .dont-break-out {
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -26,6 +20,10 @@ input.param { width: auto;  margin-right: 5px; }
   -webkit-hyphens: auto;
   hyphens: auto;
 }
+</style>
+<style media="print">
+#pairs li { page-break-inside: avoid; }
+.no-print { display:none; }
 </style>
 </head>
 <body>
@@ -100,8 +98,7 @@ document.getElementById('generatePair').addEventListener('click', function() {
   ].map(function(item) {
     return '<dt>' + item.label + ':</dt>' +
       '<dd>' +
-      '<span class="print-only dont-break-out">' + item.value + '</span>' +
-      '<input class="no-print" readonly value="' + item.value + '" />' +
+      '<span class="dont-break-out">' + item.value + '</span>' +
       '</dd>';
   }).join('') + '</dl></li>';
 }, false);
