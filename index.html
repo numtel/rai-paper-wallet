@@ -12,12 +12,23 @@ input { width: 100%; padding: 3px; }
 </head>
 <body>
 <h1>RaiBlocks Paper Wallet Generator</h1>
-<p>Based on the <a href="https://github.com/jaimehgb/RaiWebWallet">RaiWebWallet</a> source code. This code is licensed GPL v3.</p>
+<p>Based on the <a href="https://github.com/jaimehgb/RaiWebWallet">RaiWebWallet</a> source code. <a href="https://github.com/numtel/rai-paper-wallet/">This code</a> is licensed GPL v3.</p>
 <p>This page may be used offline, <a href="https://github.com/numtel/rai-paper-wallet/archive/master.zip">download the source code zip</a> and open index.html in your web browser.</p>
-<p>Click the button to generate a secret/address pair that you may import into other wallet applications.</p>
+<hr />
+<ol>
+<li>
+<p>The wallet accounts are generated from a 32 byte seed input as a 64 character long hexadecimal string.</p>
+<p>Click "Use Random" to select a random value using <a href="https://github.com/dchest/tweetnacl-js#naclrandombyteslength">nacl.js</a>.
 <p><label>Seed: <input id="seed" /></label><button id="randomSeed">Use Random</button></p>
-<p><strong>Back up the wallet seed somewhere safe.</strong> Anyone who knows it is able to generate all your private keys, thus having access to your funds. So if you forget your password but you have the seed you can recover your funds.</p>
-<p><button id="printPair">Generate new wallet pair</button></p>
+<p><strong>Back up the wallet seed somewhere safe.</strong></p>
+<p>Anyone who knows it is able to generate your private keys, thus having access to your funds.</p>
+</li>
+<li>
+<p>Click the button to generate a account key/address pair that you may import into other wallet applications.</p>
+<p><button id="printPair">Generate account pair</button></p>
+</li>
+</ol>
+<hr />
 <ol id="pairs"></ol>
 <script>
 function newPair(seed) {
@@ -49,7 +60,7 @@ document.getElementById('printPair').addEventListener('click', function() {
   }
 
   var pair = newPair(hex_uint8(seedInput.value));
-  pairList.innerHTML += '<li><dl><dt>Wallet Seed:</dt><dd><input value="' + seedInput.value + '" /></dd><dt>Account Key:</dt><dd><input value="' + pair.secret + '" /></dd><dt>Address:</dt><dd><input value="' + pair.address + '" /></dd></dl></li>';
+  pairList.innerHTML += '<li><dl><dt>Wallet Seed:</dt><dd><input readonly value="' + seedInput.value + '" /></dd><dt>Account Key:</dt><dd><input readonly value="' + pair.secret + '" /></dd><dt>Address:</dt><dd><input readonly value="' + pair.address + '" /></dd></dl></li>';
 }, false);
 </script>
 </body>
