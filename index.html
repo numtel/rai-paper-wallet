@@ -6,6 +6,7 @@
 <script src="functions.js"></script>
 <style>
 body { max-width: 960px; margin: 10px auto; font-family: sans-serif; padding: 0 10px; }
+#seed { width: auto;  margin-right: 5px; }
 input { width: 100%; padding: 3px; }
 </style>
 </head>
@@ -14,12 +15,12 @@ input { width: 100%; padding: 3px; }
 <p>Based on the <a href="https://github.com/jaimehgb/RaiWebWallet">RaiWebWallet</a> source code. This code is licensed GPL v3.</p>
 <p>This page may be used offline, <a href="https://github.com/numtel/rai-paper-wallet/archive/master.zip">download the source code zip</a> and open index.html in your web browser.</p>
 <p>Click the button to generate a secret/address pair that you may import into other wallet applications.</p>
+<p><label>Seed: <input id="seed" /></label><button id="randomSeed">Use Random</button></p>
+<p><strong>Back up the wallet seed somewhere safe.</strong> Anyone who knows it is able to generate all your private keys, thus having access to your funds. So if you forget your password but you have the seed you can recover your funds.</p>
 <p><button id="printPair">Generate new wallet pair</button></p>
 <ol id="pairs"></ol>
 <script>
-function newPair() {
-  var seed = nacl.randomBytes(32);
-
+function newPair(seed) {
   var index = hex_uint8(dec2hex(0, 4));
 
   var context = blake2bInit(32);
@@ -35,9 +36,20 @@ function newPair() {
 }
 
 var pairList = document.getElementById('pairs');
+var seedInput = document.getElementById('seed');
+
+document.getElementById('randomSeed').addEventListener('click', function() {
+  seedInput.value = uint8_hex(nacl.randomBytes(32));
+}, false);
+
 document.getElementById('printPair').addEventListener('click', function() {
-  var pair = newPair();
-  pairList.innerHTML += '<li><dl><dt>Account Secret:</dt><dd><input value="' + pair.secret + '" /></dd><dt>Address:</dt><dd><input value="' + pair.address + '" /></dd></dl></li>';
+  if(!/[0-9A-F]{64}/i.test(seedInput.value)) {
+    alert('Seed must be 64 character hexadecimal string!');
+    return;
+  }
+
+  var pair = newPair(hex_uint8(seedInput.value));
+  pairList.innerHTML += '<li><dl><dt>Wallet Seed:</dt><dd><input value="' + seedInput.value + '" /></dd><dt>Account Key:</dt><dd><input value="' + pair.secret + '" /></dd><dt>Address:</dt><dd><input value="' + pair.address + '" /></dd></dl></li>';
 }, false);
 </script>
 </body>
