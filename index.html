@@ -6,8 +6,8 @@
 <script src="functions.js"></script>
 <style>
 body { max-width: 960px; margin: 10px auto; font-family: sans-serif; padding: 0 10px; }
-#seed { width: auto;  margin-right: 5px; }
-input { width: 100%; padding: 3px; }
+input { width: 100%; padding: 3px; margin: 2px 0 0 0; }
+input.param { width: auto;  margin-right: 5px; }
 </style>
 <style media="print">
 body>* {display:none; }
@@ -23,9 +23,14 @@ body>.print { display: block; }
 <li>
 <p>The wallet accounts are generated from a 32 byte seed input as a 64 character long hexadecimal string.</p>
 <p>Click "Use Random" to select a random value using <a href="https://github.com/dchest/tweetnacl-js#naclrandombyteslength">nacl.js</a>.
-<p><label>Seed: <input id="seed" /></label><button id="randomSeed">Use Random</button></p>
+<p><label>Seed: <input autocomplete="off" class="param" id="seed" /></label><button id="randomSeed">Use Random</button></p>
 <p><strong>Back up the wallet seed somewhere safe.</strong></p>
 <p>Anyone who knows it is able to generate your private keys, thus having access to your funds.</p>
+</li>
+<li>
+<p>Up to 2<sup>32</sup> accounts may be addressed from a single seed. Please select which account to generate a private key/address pair.</p>
+<p>By default, <a href="https://raiwallet.com/">RaiWallet</a> uses the 0th account and the desktop wallet uses the 1st account.</a></p>
+<p><label>Account Number: <input class="param" id="accountIndex" type="number" min="0" max="4294967295" value="0" /></p>
 </li>
 <li>
 <p>Click the button to generate a account key/address pair that you may import into other wallet applications.</p>
@@ -35,8 +40,8 @@ body>.print { display: block; }
 <hr />
 <ol class="print" id="pairs"></ol>
 <script>
-function newPair(seed) {
-  var index = hex_uint8(dec2hex(0, 4));
+function newPair(seed, accountIndex) {
+  var index = hex_uint8(dec2hex(accountIndex, 4));
 
   var context = blake2bInit(32);
   blake2bUpdate(context, seed);
@@ -52,6 +57,7 @@ function newPair(seed) {
 
 var pairList = document.getElementById('pairs');
 var seedInput = document.getElementById('seed');
+var accountIndexInput = document.getElementById('accountIndex');
 
 document.getElementById('randomSeed').addEventListener('click', function() {
   seedInput.value = uint8_hex(nacl.randomBytes(32));
@@ -63,8 +69,14 @@ document.getElementById('printPair').addEventListener('click', function() {
     return;
   }
 
-  var pair = newPair(hex_uint8(seedInput.value));
-  pairList.innerHTML += '<li><dl><dt>Wallet Seed:</dt><dd><input readonly value="' + seedInput.value + '" /></dd><dt>Account Key:</dt><dd><input readonly value="' + pair.secret + '" /></dd><dt>Address:</dt><dd><input readonly value="' + pair.address + '" /></dd></dl></li>';
+  var accountIndex = parseInt(accountIndexInput.value, 10);
+  if(accountIndex < 0 || accountIndex >= Math.pow(2,32)) {
+    alert('Account index must be 32 bit unsigned integer!');
+    return;
+  }
+
+  var pair = newPair(hex_uint8(seedInput.value), accountIndex);
+  pairList.innerHTML += '<li><dl><dt>Wallet Seed:</dt><dd><input readonly value="' + seedInput.value + '" /></dd><dt>Account Key: (#' + accountIndex + ')</dt><dd><input readonly value="' + pair.secret + '" /></dd><dt>Address:</dt><dd><input readonly value="' + pair.address + '" /></dd></dl></li>';
 }, false);
 </script>
 </body>
