@@ -6,7 +6,7 @@
 <script src="blake2b.js"></script>
 <script src="functions.js"></script>
 <style>
-body { max-width: 960px; margin: 10px auto; font-family: sans-serif; padding: 0 10px; }
+body { max-width: 960px; margin: 10px auto 50px; font-family: sans-serif; padding: 0 10px; }
 input { width: 100%; padding: 3px; margin: 2px 0 0 0; }
 input.param { width: auto;  margin-right: 5px; }
 .dont-break-out {
@@ -96,10 +96,10 @@ document.getElementById('generatePair').addEventListener('click', function() {
     { label: 'Account Key #' + accountIndex, value: pair.secret },
     { label: 'Address', value: pair.address },
   ].map(function(item) {
-    return '<dt>' + item.label + ':</dt>' +
-      '<dd>' +
+    return '<div><dt>' + item.label + ':</dt></div>' +
+      '<div><dd>' +
       '<span class="dont-break-out">' + item.value + '</span>' +
-      '</dd>';
+      '</dd></div>';
   }).join('') + '</dl></li>';
 }, false);
 </script>
