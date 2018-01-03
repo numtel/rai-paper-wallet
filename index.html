@@ -1,0 +1,44 @@
+<html>
+<head>
+<title>RaiBlocks Paper Wallet Generator</title>
+<script src="nacl.js"></script>
+<script src="blake2b.js"></script>
+<script src="functions.js"></script>
+<style>
+body { max-width: 960px; margin: 10px auto; font-family: sans-serif; padding: 0 10px; }
+input { width: 100%; padding: 3px; }
+</style>
+</head>
+<body>
+<h1>RaiBlocks Paper Wallet Generator</h1>
+<p>Based on the <a href="https://github.com/jaimehgb/RaiWebWallet">RaiWebWallet</a> source code. This code is licensed GPL v3.</p>
+<p>This page may be used offline, <a href="https://github.com/numtel/rai-paper-wallet/archive/master.zip">download the source code zip</a> and open index.html in your web browser.</p>
+<p>Click the button to generate a secret/address pair that you may import into other wallet applications.</p>
+<p><button id="printPair">Generate new wallet pair</button></p>
+<ol id="pairs"></ol>
+<script>
+function newPair() {
+  var seed = nacl.randomBytes(32);
+
+  var index = hex_uint8(dec2hex(0, 4));
+
+  var context = blake2bInit(32);
+  blake2bUpdate(context, seed);
+  blake2bUpdate(context, index);
+
+  var newKey = blake2bFinal(context);
+
+  return {
+    secret: uint8_hex(newKey),
+    address: accountFromHexKey(uint8_hex(nacl.sign.keyPair.fromSecretKey(newKey).publicKey))
+  };
+}
+
+var pairList = document.getElementById('pairs');
+document.getElementById('printPair').addEventListener('click', function() {
+  var pair = newPair();
+  pairList.innerHTML += '<li><dl><dt>Account Secret:</dt><dd><input value="' + pair.secret + '" /></dd><dt>Address:</dt><dd><input value="' + pair.address + '" /></dd></dl></li>';
+}, false);
+</script>
+</body>
+</html>
