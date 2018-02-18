@@ -5,6 +5,7 @@
 <script src="nacl.js"></script>
 <script src="blake2b.js"></script>
 <script src="functions.js"></script>
+<script type="text/javascript" src="qrcode.js"></script>
 <style>
 body { max-width: 960px; margin: 10px auto 50px; font-family: sans-serif; padding: 0 10px; }
 input { width: 100%; padding: 3px; margin: 2px 0 0 0; }
@@ -90,11 +91,23 @@ document.getElementById('generatePair').addEventListener('click', function() {
   }
 
   var pair = newPair(hex_uint8(seedInput.value), accountIndex);
+//QRcode:    
+var typeNumber = 4;
+var errorCorrectionLevel = 'L';
+var qrseed = qrcode(typeNumber, errorCorrectionLevel);
+var qrkey = qrcode(typeNumber, errorCorrectionLevel);
+var qraddress = qrcode(typeNumber, errorCorrectionLevel);
+qrseed.addData(seedInput.value);
+qrkey.addData(pair.secret);
+qraddress.addData(pair.address);
+qrseed.make();
+qrkey.make();
+qraddress.make();
 
   pairList.innerHTML += '<li><dl>' + [
-    { label: 'Wallet Seed', value: seedInput.value },
-    { label: 'Account Key #' + accountIndex, value: pair.secret },
-    { label: 'Address', value: pair.address },
+    { label: 'Wallet Seed', value: qrseed.createImgTag() + seedInput.value  },
+    { label: 'Account Key #' + accountIndex, value: qrkey.createImgTag() + pair.secret },
+    { label: 'Address', value: qraddress.createImgTag() + pair.address },
   ].map(function(item) {
     return '<div><dt>' + item.label + ':</dt></div>' +
       '<div><dd>' +
